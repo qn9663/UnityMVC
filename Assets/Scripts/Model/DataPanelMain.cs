@@ -11,7 +11,7 @@ public class DataPanelMain : DataService.Data
     public override void OnUpdate()
     {
         base.OnUpdate();
-        NotificationCenter.instance.PostNotification(ConstStrings.Event_panelMain,"Chang", mLocalData);
+        NotificationCenter.instance.PostNotification(EventString.Event_panelMain,"Chang", mLocalData);
     }
 
     public override KeyValueBase GetData()

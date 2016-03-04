@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+
+
+using Handler = System.Action<System.Object, System.Object>;
 
 public class UIService
 {
@@ -11,17 +15,19 @@ public class UIService
         get
         {
             if (instance == null)
-                instance = new UIService();
-            
+                instance = new UIService();          
             return instance;
         }
     }
 
     Dictionary<string, UI> _uiDic = new Dictionary<string, UI>();
 
+    UI _currentUI;
     public T CreatUI<T>(string name) where T : UI
     {
         T t = CreatItemUI<T>(name, name, null);
+        _currentUI = t;
+        EventTriggerListener.Get(EventSystem.current.gameObject).onClick = t.OnClick;
         return t;
     }
 
@@ -54,8 +60,6 @@ public class UIService
         t.OnShow(true);
         return t;
     }
-
-
 
     public void UpDateUI(UI ui, KeyValueBase data)
     {
@@ -99,11 +103,21 @@ public class UIService
         public UI(string name) { }
         public virtual void OnCreat() { }
         public virtual void OnShow(bool isShow) { }
-        //public abstract void OnClick(GameObject go);
+        public virtual void OnClick(GameObject go) { }
         public virtual void UpDateUI(KeyValueBase data) { }
         public virtual void OnUpdate() { }
         public virtual void OnClose() { }
         public virtual void OnActive(bool isActive) { }
         public virtual void OnDestory() { }
+
+        public void AddListener(Handler handler)
+        {
+            NotificationCenter.instance.AddObserver(handler, EventString.Event_UI);
+        }
+
+        public void RemoveListner(Handler handler)
+        {
+            NotificationCenter.instance.RemoveObserver(handler, EventString.Event_UI);
+        }
     }
 }

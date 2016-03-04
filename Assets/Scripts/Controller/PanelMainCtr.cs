@@ -4,9 +4,9 @@ using System;
 
 public class PanelMainCtr : State {
 
-	// Use this for initialization
-	void Start () {
-        var ui = UIService.Instance.ShowUI<UIPanelMian>(ConstStrings.Panel_Main);
+    UIPanelMian _uiPanelMian;
+    // Use this for initialization
+    void Start () {
         Enter();
 	}
 	
@@ -15,12 +15,16 @@ public class PanelMainCtr : State {
 	
 	}
 
+    void OnClickPanelMain(object sender,object buttonId) { }
+
     public override void Enter()
     {
-        NotificationCenter.instance.AddObserver(OnDataUpdate, ConstStrings.Event_panelMain, "Chang");
+        _uiPanelMian = UIService.Instance.ShowUI<UIPanelMian>(ConstStrings.Panel_Main);
+        _uiPanelMian.AddListener(OnClickPanelMain);
+
+        NotificationCenter.instance.AddObserver(OnDataUpdate, EventString.Event_panelMain, "Chang");
         base.Enter();
-        var data = DataService.Instance.GetDataForm<DataPanelMain>(ConstStrings.Panel_Main);
-       
+        var data = DataService.Instance.GetDataForm<DataPanelMain>(ConstStrings.Panel_Main);  
     }
 
     private void OnDataUpdate(object arg1, object arg2)
@@ -32,5 +36,7 @@ public class PanelMainCtr : State {
     public override void Exit()
     {
         base.Exit();
+        _uiPanelMian.AddListener(OnClickPanelMain);
+        _uiPanelMian = null;
     }
 }

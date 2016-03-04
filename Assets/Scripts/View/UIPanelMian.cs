@@ -17,6 +17,17 @@ public class UIPanelMian : UIService.UI {
         else { }
     }
 
+    public override void OnClick(GameObject go)
+    {
+        base.OnClick(go);
+        var name = go.name;
+        switch (name == "")
+        {
+            default:
+                break;
+        }
+    }
+
     public override void UpDateUI(KeyValueBase data)
     {
         base.UpDateUI(data);
@@ -29,6 +40,5 @@ public class UIPanelMian : UIService.UI {
     public override void OnUpdate()
     {
         base.OnUpdate();
-
     }
 }
