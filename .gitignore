@@ -1,3 +1,5 @@
 *.csproj
 *.sln
 Library/
+*.suo
+UnityVS/
