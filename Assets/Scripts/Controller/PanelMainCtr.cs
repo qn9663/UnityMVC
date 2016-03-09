@@ -15,7 +15,12 @@ public class PanelMainCtr : State {
 	
 	}
 
-    void OnClickPanelMain(object sender,object buttonId) { }
+    void OnClickPanelMain(object sender,object buttonId)
+    {
+        string button = (string)buttonId;
+        if (button == UIPanelMian.ButtonId.button_1.ToString())
+            Debug.Log("点击了按钮");
+    }
 
     public override void Enter()
     {
@@ -24,7 +29,7 @@ public class PanelMainCtr : State {
 
         NotificationCenter.instance.AddObserver(OnDataUpdate, EventString.Event_panelMain, "Chang");
         base.Enter();
-        var data = DataService.Instance.GetDataForm<DataPanelMain>(ConstStrings.Panel_Main);  
+        DataService.Instance.GetDataForm<DataPanelMain>(ConstStrings.Panel_Main);  
     }
 
     private void OnDataUpdate(object arg1, object arg2)

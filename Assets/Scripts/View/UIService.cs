@@ -9,33 +9,20 @@ using Handler = System.Action<System.Object, System.Object>;
 
 public class UIService
 {
+
+    Dictionary<string, UI> _uiDic = new Dictionary<string, UI>();
+    UI _currentUI;
+    Transform _canvas;
+
     static UIService instance = null;
     public static UIService Instance
     {
         get
         {
             if (instance == null)
-                instance = new UIService();          
+                instance = new UIService();
             return instance;
         }
-    }
-
-    Dictionary<string, UI> _uiDic = new Dictionary<string, UI>();
-
-    UI _currentUI;
-    public T CreatUI<T>(string name) where T : UI
-    {
-        T t = CreatItemUI<T>(name, name, null);
-        _currentUI = t;
-        EventTriggerListener.Get(EventSystem.current.gameObject).onClick = t.OnClick;
-        return t;
-    }
-
-    public T ShowUI<T>(string name) where T : UI
-    {
-        T t = CreatUI<T>(name);
-        t.OnShow(true);
-        return t;
     }
 
     public T CreatItemUI<T>(string name, string uiKey, Transform parent) where T : UI
@@ -48,33 +35,68 @@ public class UIService
         else
         {
             t = Activator.CreateInstance(typeof(T), uiKey) as T;
-            _uiDic.Add(uiKey, t);
-            t.OnCreat();
+            var prefab = Resources.Load<GameObject>("UI/" + name);
+            if (prefab != null)
+            {
+                var tempObj = GameObject.Instantiate<GameObject>(prefab);
+                tempObj.transform.SetParent(parent);
+                tempObj.transform.localPosition = Vector3.zero;
+                tempObj.transform.localScale = Vector3.one;
+                tempObj.SetActive(false);
+                t.mPrefab = tempObj;
+                _uiDic.Add(uiKey, t);
+                t.OnCreat();
+            }
+            else
+            {
+                Debug.LogError("没有名字为" + name + "的预制件");
+            }
         }
+        return t;
+    }
+
+    public T CreatUI<T>(string name) where T : UI
+    {
+        if (_canvas == null) _canvas = GameObject.FindObjectOfType<Canvas>().transform;
+        T t = CreatItemUI<T>(name, name, _canvas);
+        EventTriggerListener.Get(EventSystem.current.gameObject).onClick = t.OnClick;
+        return t;
+    }
+
+    public T ShowUI<T>(string name) where T : UI
+    {
+        T t = CreatUI<T>(name);
+        _currentUI = t;
+        t.mPrefab.SetActive(true);
+        t.OnShow(true);
         return t;
     }
 
     public T ShowItemUI<T>(string name, string uiKey, Transform parent) where T : UI
     {
         T t = CreatItemUI<T>(name, uiKey, parent);
+        t.mPrefab.SetActive(true);
         t.OnShow(true);
         return t;
     }
 
-    public void UpDateUI(UI ui, KeyValueBase data)
+    public void UpDateUI(UI ui, KeyValueBase keyValue)
     {
-        ui.UpDateUI(data);
+        Debug.Assert(ui != null, "ui为null");
+        Debug.Assert(keyValue != null, "keyValue == null");
+        if (ui == null && keyValue == null) return;
+        ui.UpDateUI(keyValue);
     }
 
     public void UpDateUI(string uiKey, KeyValueBase data)
     {
-        var ui = GetUI(uiKey);
+        var ui = GetUIBy(uiKey);
         Debug.Assert(ui != null, "更新的UI为空");
         if (ui != null)
             ui.UpDateUI(data);
     }
 
-    public UI GetUI(string name)
+    public UI GetUIBy(string name)
     {
         Debug.Assert(_uiDic.ContainsKey(name), "查找的UI不存在");
         if (_uiDic.ContainsKey(name))
@@ -88,10 +110,13 @@ public class UIService
         if (_uiDic.ContainsKey(name))
         {
             var ui = _uiDic[name];
-            ui.OnShow(false);
+            ui.Show(false);
             if (isDestroy)
             {
+                GameObject.Destroy(ui.mPrefab);
+                ui.mPrefab = null;
                 ui.OnDestory();
+                _uiDic.Remove(name);
             }
         }
     }
@@ -110,14 +135,25 @@ public class UIService
         public virtual void OnActive(bool isActive) { }
         public virtual void OnDestory() { }
 
+        public void Show(bool show)
+        {
+            mPrefab.SetActive(show);
+            OnShow(show);
+        }
+
         public void AddListener(Handler handler)
         {
-            NotificationCenter.instance.AddObserver(handler, EventString.Event_UI);
+            this.AddObserver(handler, EventString.Event_UI);
+        }
+
+        public void SendMessage(string buttonName)
+        {
+            this.PostNotification(EventString.Event_UI, buttonName);
         }
 
         public void RemoveListner(Handler handler)
         {
-            NotificationCenter.instance.RemoveObserver(handler, EventString.Event_UI);
+            this.RemoveObserver(handler, EventString.Event_UI);
         }
     }
 }
