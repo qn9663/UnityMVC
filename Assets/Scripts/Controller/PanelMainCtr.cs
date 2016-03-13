@@ -9,17 +9,21 @@ public class PanelMainCtr : State {
     void Start () {
         Enter();
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
     void OnClickPanelMain(object sender,object buttonId)
     {
-        string button = (string)buttonId;
-        if (button == UIPanelMian.ButtonId.button_1.ToString())
-            Debug.Log("点击了按钮");
+        var id = (int)buttonId;
+        switch (id)
+        {
+            case (int)PanelMianButtonIDEnum.Button_1:
+                Debug.Log("点击了按钮1111111");
+                break;
+            case (int)PanelMianButtonIDEnum.Button_2:
+                Debug.Log("点击了按钮22222222");
+                break;
+            default:
+                break;
+        }
     }
 
     public override void Enter()
@@ -41,7 +45,7 @@ public class PanelMainCtr : State {
     public override void Exit()
     {
         base.Exit();
-        _uiPanelMian.AddListener(OnClickPanelMain);
+        _uiPanelMian.RemoveListner(OnClickPanelMain);
         _uiPanelMian = null;
     }
 }

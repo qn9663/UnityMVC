@@ -1,19 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class UIPanelMian : UIService.UI {
-    public enum ButtonId
-    {
-        button_1 = 1,
-    }
-    Dictionary<string, string> _buttonDic = new Dictionary<string, string>();
+public enum PanelMianButtonIDEnum
+{
+    Button_1 = 1,
+    Button_2 = 2,
+}
+
+public class UIPanelMian : UIService.UI
+{
     RefPanelMian _refPanelMain;
     public UIPanelMian(string name) : base(name) { }
 
     public override void OnCreat()
     {
         base.OnCreat();
-        _buttonDic.Add("Button", ButtonId.button_1.ToString());
         _refPanelMain = mPrefab.GetComponent<RefPanelMian>();
     }
 
@@ -24,21 +25,11 @@ public class UIPanelMian : UIService.UI {
         else { }
     }
 
-    public override void OnClick(GameObject go)
-    {
-        base.OnClick(go);
-        var name = go.name;
-        if (_buttonDic.ContainsKey(name))
-            SendMessage(_buttonDic[name]);
-    }
-
     public override void UpDateUI(KeyValueBase data)
     {
         base.UpDateUI(data);
         var da = (PanelMainKeyValue)data;
-        Debug.Log("UpDateUI" + da.Name);
-        Debug.Log("UpDateUI" + da.Age);
-
+        _refPanelMain.mText = "名字是：" + da.Name + "年龄是： " + da.Age;
     }
 
     public override void OnUpdate()

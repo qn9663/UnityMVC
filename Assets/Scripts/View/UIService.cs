@@ -1,15 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-
 
 using Handler = System.Action<System.Object, System.Object>;
 
 public class UIService
 {
-
     Dictionary<string, UI> _uiDic = new Dictionary<string, UI>();
     UI _currentUI;
     Transform _canvas;
@@ -35,31 +31,42 @@ public class UIService
         else
         {
             t = Activator.CreateInstance(typeof(T), uiKey) as T;
-            var prefab = Resources.Load<GameObject>("UI/" + name);
-            if (prefab != null)
+            var tempObj = _CreatItemUI(name, parent);
+            if (tempObj != null)
             {
-                var tempObj = GameObject.Instantiate<GameObject>(prefab);
-                tempObj.transform.SetParent(parent);
-                tempObj.transform.localPosition = Vector3.zero;
-                tempObj.transform.localScale = Vector3.one;
-                tempObj.SetActive(false);
+                tempObj.name = uiKey;
                 t.mPrefab = tempObj;
+                t.OnClick();
                 _uiDic.Add(uiKey, t);
                 t.OnCreat();
             }
-            else
-            {
-                Debug.LogError("没有名字为" + name + "的预制件");
-            }
         }
         return t;
+    }
+
+    private GameObject _CreatItemUI(string name, Transform parent)
+    {
+        var prefab = Resources.Load<GameObject>("UI/" + name);
+        if (prefab != null)
+        {
+            var tempObj = GameObject.Instantiate<GameObject>(prefab);
+            tempObj.transform.SetParent(parent);
+            tempObj.transform.localPosition = Vector3.zero;
+            tempObj.transform.localScale = Vector3.one;
+            tempObj.SetActive(false);
+            return tempObj;
+        }
+        else
+        {
+            Debug.LogError("没有名字为" + name + "的预制件");
+            return null;
+        }
     }
 
     public T CreatUI<T>(string name) where T : UI
     {
         if (_canvas == null) _canvas = GameObject.FindObjectOfType<Canvas>().transform;
         T t = CreatItemUI<T>(name, name, _canvas);
-        EventTriggerListener.Get(EventSystem.current.gameObject).onClick = t.OnClick;
         return t;
     }
 
@@ -128,12 +135,30 @@ public class UIService
         public UI(string name) { }
         public virtual void OnCreat() { }
         public virtual void OnShow(bool isShow) { }
-        public virtual void OnClick(GameObject go) { }
         public virtual void UpDateUI(KeyValueBase data) { }
         public virtual void OnUpdate() { }
         public virtual void OnClose() { }
         public virtual void OnActive(bool isActive) { }
         public virtual void OnDestory() { }
+
+        public void OnClick()
+        {
+            var refUI = mPrefab.GetComponent<RefUI>();
+            Debug.Assert(refUI != null, "refUI == null");
+            if (refUI == null) return;
+
+            refUI.Buttons.ForEach(item =>
+            {
+                if (item != null)
+                {
+                    EventTriggerListener.Get(item.button).onClick = (g) =>
+                    {
+                        if (g.name == item.button.name)
+                            SendMessage(item.id);
+                    };
+                }
+            });
+        }
 
         public void Show(bool show)
         {
@@ -146,14 +171,35 @@ public class UIService
             this.AddObserver(handler, EventString.Event_UI);
         }
 
-        public void SendMessage(string buttonName)
+        public void SendMessage(int buttonID)
         {
-            this.PostNotification(EventString.Event_UI, buttonName);
+            this.PostNotification(EventString.Event_UI, buttonID);
         }
 
         public void RemoveListner(Handler handler)
         {
             this.RemoveObserver(handler, EventString.Event_UI);
+        }
+    }
+
+    [Serializable]
+    public class GameObjecteButtton
+    {
+        public GameObject button;
+        public int id;
+    }
+
+    public abstract class RefUI : MonoBehaviour
+    {
+        [SerializeField]
+        List<GameObjecteButtton> buttons;
+
+        public List<GameObjecteButtton> Buttons
+        {
+            get
+            {
+                return buttons;
+            }
         }
     }
 }
