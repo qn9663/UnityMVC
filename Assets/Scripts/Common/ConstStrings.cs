@@ -3,7 +3,7 @@ using System.Collections;
 
 public class ConstStrings
 {
-    public const string Panel_Main = "panel_Main";
+    public const string Panel_Main = "CanvasPanelMain";
 }
 
 public class EventString

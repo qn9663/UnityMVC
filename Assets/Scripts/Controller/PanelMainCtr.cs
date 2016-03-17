@@ -16,7 +16,7 @@ public class PanelMainCtr : State {
         switch (id)
         {
             case (int)PanelMianButtonIDEnum.Button_1:
-                Debug.Log("点击了按钮1111111");
+                UIService.Instance.CloseUI(ConstStrings.Panel_Main);
                 break;
             case (int)PanelMianButtonIDEnum.Button_2:
                 Debug.Log("点击了按钮22222222");

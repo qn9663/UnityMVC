@@ -50,6 +50,7 @@ public class UIService
         if (prefab != null)
         {
             var tempObj = GameObject.Instantiate<GameObject>(prefab);
+            if (parent == null) return tempObj;
             tempObj.transform.SetParent(parent);
             tempObj.transform.localPosition = Vector3.zero;
             tempObj.transform.localScale = Vector3.one;
@@ -65,8 +66,7 @@ public class UIService
 
     public T CreatUI<T>(string name) where T : UI
     {
-        if (_canvas == null) _canvas = GameObject.FindObjectOfType<Canvas>().transform;
-        T t = CreatItemUI<T>(name, name, _canvas);
+        T t = CreatItemUI<T>(name, name, null);
         return t;
     }
 
@@ -111,7 +111,7 @@ public class UIService
         return null;
     }
 
-    public void CloseUI(string name, bool isDestroy)
+    public void CloseUI(string name, bool isDestroy = false)
     {
         Debug.Assert(_uiDic.ContainsKey(name), "要关闭的UI不存在");
         if (_uiDic.ContainsKey(name))
@@ -126,6 +126,15 @@ public class UIService
                 _uiDic.Remove(name);
             }
         }
+    }
+
+    public void CloseAllUI(bool isDestory = false)
+    {
+        foreach (var ui in _uiDic)
+        {
+            CloseUI(ui.Key, isDestory);
+        }
+        _uiDic.Clear();
     }
 
     public abstract class UI
@@ -183,7 +192,7 @@ public class UIService
     }
 
     [Serializable]
-    public class GameObjecteButtton
+    public class ButtonId
     {
         public GameObject button;
         public int id;
@@ -192,14 +201,8 @@ public class UIService
     public abstract class RefUI : MonoBehaviour
     {
         [SerializeField]
-        List<GameObjecteButtton> buttons;
+        List<ButtonId> buttons;
 
-        public List<GameObjecteButtton> Buttons
-        {
-            get
-            {
-                return buttons;
-            }
-        }
+        public List<ButtonId> Buttons { get { return buttons; } }
     }
 }

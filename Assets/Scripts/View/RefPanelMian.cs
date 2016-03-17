@@ -6,14 +6,11 @@ using UnityEngine.UI;
 
 public class RefPanelMian : UIService.RefUI
 {
-    [SerializeField]
-    Image image;
-    [SerializeField]
-    Text text;
+    [SerializeField] Image image;
+    [SerializeField] Text text;
 
     public Sprite mSprite
     {
-        get { return image.sprite; }
         set
         {
             if (value == null)
@@ -31,7 +28,6 @@ public class RefPanelMian : UIService.RefUI
 
     public string mText
     {
-        get { return text.text; }
         set
         {
             text.text = value;
