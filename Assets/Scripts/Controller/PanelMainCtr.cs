@@ -12,15 +12,15 @@ public class PanelMainCtr : State
     void Start()
     {
         int num = 5;
-        num.AddPropLisenter("Num", OnNumChange);
-        num.SetValue("Num", 5, false);
-        num.RemovePropLisenter("Num",OnNumChange);
+        Debug.Log("SetValue之前 " + num);
+        num.AddPropLisenter(OnNumChange);
+        num.SetValue(6, out num);
+        num.SetSendTypeToChange();
+        num.SetValue(6, out num);
+        Debug.Log("SetValue中 " + num);
 
-        this.AddPropLisenter(this.name, OnValueChange);
-        this.AddPropLisenter(this.name, OnValueChange1);
-        this.SetValue(this.name, this.transform, false);
-        this.RemovePropLisenter(this.name, OnValueChange1);
-        this.RemovePropLisenter(this.name, OnValueChange);
+        num.RemovePropLisenter(OnNumChange);
+        Debug.Log("SetValue之后 " + num);
         Enter();
     }
 

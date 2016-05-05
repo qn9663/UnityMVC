@@ -2,10 +2,24 @@
 
 public class Prop<T>
 {
+    public enum SendType
+    {
+        nomalSend,
+        changeSend,
+        dontSend
+    }
+
+    private SendType _sendType = SendType.nomalSend;
+    public SendType mSendType
+    {
+        get { return _sendType; }
+        set { _sendType = value; }
+    }
+
+    public string name { get; set; }
+
     Action<T> OnValueChange;
     T lastValue;
-
-    public bool IsSend { get; set; }
 
     public T Value { private set; get; }
 
@@ -15,21 +29,31 @@ public class Prop<T>
         lastValue = default(T);
     }
 
-    public void SetValue(T value, bool isChangeSend = true)
+    public void SetAndSendValue(T value)
     {
-        if (!value.Equals(lastValue))
+        switch (_sendType)
         {
-            this.Value = value;
-            this.lastValue = value;
-            if (IsSend) Invoke();
+            case SendType.nomalSend:
+                SetValue(value);
+                SendChange();
+                break;
+            case SendType.changeSend:
+                if (value.Equals(lastValue)) break;
+                SetValue(value);
+                SendChange();
+                break;
+            case SendType.dontSend:
+                SetValue(value);
+                break;
+            default:
+                break;
         }
-        else
-        {
-            if (!isChangeSend)
-            {
-                if (IsSend) Invoke();
-            }
-        }
+    }
+
+    public void SetValue(T value)
+    {
+        Value = value;
+        lastValue = value;
     }
 
     public void ClearValue()
@@ -47,7 +71,7 @@ public class Prop<T>
         this.OnValueChange -= onValueChange;
     }
 
-    public void Invoke()
+    public void SendChange()
     {
         if (OnValueChange != null)
             OnValueChange(Value);
