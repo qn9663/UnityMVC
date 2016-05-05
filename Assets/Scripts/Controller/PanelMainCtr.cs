@@ -2,15 +2,52 @@
 using System.Collections;
 using System;
 
-public class PanelMainCtr : State {
+public class PanelMainCtr : State
+{
+
+    Prop<int> prop_Num = new Prop<int>();
 
     UIPanelMian _uiPanelMian;
     // Use this for initialization
-    void Start () {
-        Enter();
-	}
+    void Start()
+    {
+        int num = 5;
+        num.AddPropLisenter("Num", OnNumChange);
+        num.SetValue("Num", 5, false);
+        num.RemovePropLisenter("Num",OnNumChange);
 
-    void OnClickPanelMain(object sender,object buttonId)
+        this.AddPropLisenter(this.name, OnValueChange);
+        this.AddPropLisenter(this.name, OnValueChange1);
+        this.SetValue(this.name, this.transform, false);
+        this.RemovePropLisenter(this.name, OnValueChange1);
+        this.RemovePropLisenter(this.name, OnValueChange);
+        Enter();
+    }
+
+    private void OnNumChange(object obj)
+    {
+        int num = (int)obj;
+        Debug.Log(num);
+    }
+
+    private void OnValueChange1(object obj)
+    {
+        Transform tra = (Transform)obj;
+        Debug.Log(tra.name);
+    }
+
+    private void OnValueChange(object obj)
+    {
+        Transform tra = (Transform)obj;
+        Debug.Log(tra.name);
+    }
+
+    private void OnNumValueChange(int a)
+    {
+        Debug.Log(string.Format("value的值变化为{0}", a));
+    }
+
+    void OnClickPanelMain(object sender, object buttonId)
     {
         var id = (int)buttonId;
         switch (id)
@@ -33,7 +70,7 @@ public class PanelMainCtr : State {
 
         NotificationCenter.instance.AddObserver(OnDataUpdate, EventString.Event_panelMain, "Chang");
         base.Enter();
-        DataService.Instance.GetDataForm<DataPanelMain>(ConstStrings.Panel_Main);  
+        DataService.Instance.GetDataForm<DataPanelMain>(ConstStrings.Panel_Main);
     }
 
     private void OnDataUpdate(object arg1, object arg2)

@@ -36,7 +36,6 @@ public class UIService
             {
                 tempObj.name = uiKey;
                 t.mPrefab = tempObj;
-                t.OnClick();
                 _uiDic.Add(uiKey, t);
                 t.OnCreat();
             }
@@ -44,24 +43,25 @@ public class UIService
         return t;
     }
 
-    private GameObject _CreatItemUI(string name, Transform parent)
+    GameObject _CreatItemUI(string name, Transform parent)
     {
+        GameObject tempObj = null;
         var prefab = Resources.Load<GameObject>("UI/" + name);
         if (prefab != null)
         {
-            var tempObj = GameObject.Instantiate<GameObject>(prefab);
+            tempObj = GameObject.Instantiate<GameObject>(prefab);
             if (parent == null) return tempObj;
-            tempObj.transform.SetParent(parent);
-            tempObj.transform.localPosition = Vector3.zero;
-            tempObj.transform.localScale = Vector3.one;
-            tempObj.SetActive(false);
-            return tempObj;
         }
         else
         {
             Debug.LogError("没有名字为" + name + "的预制件");
             return null;
         }
+        tempObj.transform.SetParent(parent);
+        tempObj.transform.localPosition = Vector3.zero;
+        tempObj.transform.localScale = Vector3.one;
+        tempObj.SetActive(false);
+        return tempObj;
     }
 
     public T CreatUI<T>(string name) where T : UI
@@ -150,23 +150,23 @@ public class UIService
         public virtual void OnActive(bool isActive) { }
         public virtual void OnDestory() { }
 
-        public void OnClick()
+        public virtual void OnClick()
         {
-            var refUI = mPrefab.GetComponent<RefUI>();
-            Debug.Assert(refUI != null, "refUI == null");
-            if (refUI == null) return;
+            //var refUI = mPrefab.GetComponent<RefUI>();
+            //Debug.Assert(refUI != null, "refUI == null");
+            //if (refUI == null) return;
 
-            refUI.Buttons.ForEach(item =>
-            {
-                if (item != null)
-                {
-                    EventTriggerListener.Get(item.button).onClick = (g) =>
-                    {
-                        if (g.name == item.button.name)
-                            SendMessage(item.id);
-                    };
-                }
-            });
+            //refUI.Buttons.ForEach(item =>
+            //{
+            //    if (item != null)
+            //    {
+            //        EventTriggerListener.Get(item.button).onClick = (g) =>
+            //        {
+            //            if (g.name == item.button.name)
+            //                SendMessage(item.id);
+            //        };
+            //    }
+            //});
         }
 
         public void Show(bool show)
