@@ -32,6 +32,7 @@ namespace Frame
                     module.Ctrl = Activator.CreateInstance(typeof(C), moduleName) as C;
                     module.Ctrl.ModuleData = Activator.CreateInstance(typeof(D), moduleName) as D;
                 }
+				modules.Add(moduleName, module);
                 module.OpenModule();
             }
             module.InitModule();
