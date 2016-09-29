@@ -1,5 +1,6 @@
 ﻿using Frame;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PanelMainController : ControllerBase
 {
@@ -30,13 +31,9 @@ public class PanelMainController : ControllerBase
         view = null;
     }
 
-    void OnClickButton1()
+    public override void OnClick(object obj)
     {
-        Debug.Log("点击了按钮1");
+        Debug.Log("点击了按钮"+(obj as Button).name);
     }
 
-    void OnClickButton2()
-    {
-        Debug.Log("点击了按钮2");
-    }
 }

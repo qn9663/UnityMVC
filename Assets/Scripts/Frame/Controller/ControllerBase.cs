@@ -62,5 +62,7 @@ namespace Frame
         public virtual void OnModuleClose() { }
 
         public virtual void OnInitModule() { }
+
+        public virtual void OnClick(object obj) { }
     }
 }

@@ -29,6 +29,11 @@ namespace Frame
             this.Ctr = ctr;
         }
 
+        public void SendClickMessage(object obj)
+        {
+            this.Ctr.OnClick(obj);
+        }
+
         public void SendClickMessage(string methodName, params object[] param)
         {
             Type type = Ctr.GetType();

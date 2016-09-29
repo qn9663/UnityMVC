@@ -15,8 +15,8 @@ public class PanelMainView : ViewBase
     {
         base.OnCreat();
         panelRef = mPrefab.GetComponent<UIPanelMainRef>();
-        panelRef.OnClickButton1.AddListener(() => SendClickMessage("OnClickButton1"));
-        panelRef.OnClickButton2.AddListener(() => SendClickMessage("OnClickButton2"));
+        panelRef.button1.onClick.AddListener(() => SendClickMessage(panelRef.button1));
+        panelRef.button2.onClick.AddListener(() => SendClickMessage(panelRef.button2));
     }
 
     public override void OnShow(bool isShow)
@@ -27,13 +27,13 @@ public class PanelMainView : ViewBase
     public override void UpDateUI(KeyValueBase data)
     {
         var panelMainData = (PanelMainKV)(data);
-        panelRef.textValue = panelMainData.Name;
+        panelRef.text.text = panelMainData.Name;
     }
 
     public override void OnDestory()
     {
         base.OnDestory();
-        panelRef.OnClickButton1.RemoveAllListeners();
-        panelRef.OnClickButton2.RemoveAllListeners();
+        panelRef.button1.onClick.RemoveAllListeners();
+        panelRef.button2.onClick.RemoveAllListeners();
     }
 }
